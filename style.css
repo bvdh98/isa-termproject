@@ -1,4 +1,10 @@
 a {
-    text-decoration: none;
-    color: #212529;
+  text-decoration: none;
+  color: #212529;
+}
+
+#profile {
+  width: 100%;
+  max-width: 100px;
+  height: auto;
 }

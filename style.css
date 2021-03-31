@@ -8,3 +8,8 @@ a {
   max-width: 100px;
   height: auto;
 }
+
+#top-div p{
+ display: inline;
+ margin: "10px";
+}

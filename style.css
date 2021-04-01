@@ -9,7 +9,11 @@ a {
   height: auto;
 }
 
-#top-div p{
- display: inline;
- margin: "10px";
+#postContent{
+  color: blue;
 }
+
+#top-div div{
+ display: inline-block;
+}
+

@@ -19,6 +19,28 @@ $(function() {
     $("#new-post-bttn").hide();
   };
 
+  $.fn.GetPosts = function(text, date) {
+
+  }
+
+  //send post to server
+  $.fn.SendPost = function(text, date) {
+    let post = {};
+    post.text = text;
+    post.date = date;
+
+    const endPoint = "http://localhost:8888/walls/API/V1/post/id";
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("POST", endPoint, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(post));
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        //document.getElementById("response").innerHTML = this.responseText;
+      }
+    };
+  };
+
   $.fn.PostToWall = function() {
     let textArea = $("#walltextarea");
     let postContent = $(`<p id="postContent"></p>`);
@@ -49,6 +71,7 @@ $(function() {
       textArea.val("");
       newPostDiv.append(topDiv, postContent);
       postDiv.append(newPostDiv);
+      $.fn.SendPost(postContent.html(), dateParagraphDiv.html());
     }
   };
 });

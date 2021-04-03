@@ -1,6 +1,10 @@
 $(function() {
   let postDiv = $("#post-div");
   let makePostDiv = $("#make-post-div");
+  let posts = [];
+  //get old posts from user
+  GetPosts(posts);
+
   let newPostBttn = $("#new-post-bttn").click(function() {
     $.fn.HideNewPostButton();
     let textArea = $(
@@ -18,10 +22,6 @@ $(function() {
   $.fn.HideNewPostButton = function() {
     $("#new-post-bttn").hide();
   };
-
-  $.fn.GetPosts = function(text, date) {
-
-  }
 
   //send post to server
   $.fn.SendPost = function(text, date) {
@@ -43,7 +43,7 @@ $(function() {
 
   $.fn.PostToWall = function() {
     let textArea = $("#walltextarea");
-    let postContent = $(`<p id="postContent"></p>`);
+    let postContent = $(`<p class="postContent"></p>`);
     let newPostDiv = $("<div></div>");
     //username which will be displayed in post, set to: test for now
     let userName = ($("<p></p>").innerHTML = "test");
@@ -62,7 +62,7 @@ $(function() {
       userNameDiv,
       dateParagraphDiv
     );
-    topDiv.attr("id", "top-div");
+    topDiv.attr("class", "top-div");
     //set the inner html of the postContent paragraph to what user typed in text area
     postContent.html(textArea.val());
     //check first that the text area isnt empty
@@ -70,8 +70,57 @@ $(function() {
       //clear the text area so the user can make a new post
       textArea.val("");
       newPostDiv.append(topDiv, postContent);
-      postDiv.append(newPostDiv);
+      postDiv.prepend(newPostDiv);
       $.fn.SendPost(postContent.html(), dateParagraphDiv.html());
     }
   };
 });
+
+//upload old wall posts from posts away
+UploadPosts = function(posts) {
+  for (i = 0; i < posts.length; i++) {
+    let postContent = document.createElement('p');
+    postContent.className = "postContent"
+    let newPostDiv = document.createElement('div');
+    //username which will be displayed in post, set to: test for now
+    let userName = document.createElement('p');
+    userName.innerHTML = "test";
+    let userNameDiv = document.createElement('div');
+    userNameDiv.appendChild(userName);
+
+    let dateParagraph = document.createElement('p');
+    dateParagraph.innerHTML = posts[i].date;
+    dateParagraph.className = "ml-4";
+    let dateParagraphDiv = document.createElement('div');
+    dateParagraphDiv.appendChild(dateParagraph);
+
+    let topDiv = document.createElement('div');
+    topDiv.className = "mt-4 top-div";
+    topDiv.appendChild(userNameDiv);
+    topDiv.appendChild(dateParagraphDiv);
+
+    newPostDiv.appendChild(topDiv);
+    newPostDiv.appendChild(postContent);
+
+    //set the inner html of the postContent paragraph to what user typed in text area
+    postContent.innerHTML = posts[i].text;
+    let postDiv = document.getElementById('post-div');
+    postDiv.appendChild(newPostDiv);
+  }
+};
+
+//create post objects and store them in posts array
+StoreWallPosts = function(posts, postNodeList) {
+  for (let i = 0; i < postNodeList.results.length; i++) {
+    let wallPost = JSON.parse(postNodeList.results[i]);
+    posts.push(wallPost);
+    UploadPosts(posts);
+  }
+};
+
+GetPosts = async function(posts) {
+  const endPoint = "http://localhost:8888/walls/API/V1/post";
+  const response = await fetch(endPoint);
+  const postNodeList = await response.json();
+  StoreWallPosts(posts, postNodeList);
+};

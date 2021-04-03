@@ -9,11 +9,11 @@ a {
   height: auto;
 }
 
-#postContent{
+.postContent{
   color: blue;
 }
 
-#top-div div{
+.top-div div{
  display: inline-block;
 }
 

@@ -32,6 +32,26 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   });
 });
 
+app.get("/walls/API/V1/post", (req, res) => {
+  let postQuery =
+    "SELECT * FROM wall_posts";
+  let string = "";
+  db.query(postQuery, function(err, result, fields) {
+    if (err) {
+      console.log(`could not get wall posts: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Got all wall posts`);
+    let query_obj = { results: [] };
+    for (let i = 0; i < result.length; i++) {
+      query_obj["results"].push(JSON.stringify(result[i]));
+    }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
+  });
+});
+
 app.listen(port, () => {
   console.log(`app listening on port ${port}!`);
 });

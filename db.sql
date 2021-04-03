@@ -1,0 +1,16 @@
+USE APP;
+
+DROP TABLE USERS;
+DROP TABLE POSTS;
+
+CREATE TABLE USERS(
+  username VARCHAR(255),
+  name VARCHAR(255),
+  id INT,
+  about_me VARCHAR(255),
+  password VARCHAR(255)
+);
+
+CREATE TABLE POSTS(
+  content VARCHAR(255)
+);

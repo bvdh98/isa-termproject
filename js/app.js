@@ -50,14 +50,16 @@ app.get('/admin', function(req, res) {
 });
 
 app.post(rootPost + "/signup", function(req, res) {
-  let username = req.username; //req.body.username;
-  let password = req.password; //req.body.password;
+  let username = req.body.username;
+  let password = req.body.password;
   if(username && password) {
-    connection.query("INSERT INTO users(username, password) VALUES ?", [username, password],
+    db.query("INSERT INTO users(username, password) VALUES ?", [username, password],
     function(err, results, fields) {
       if(err) {
         res.send({
           "code": 400,
+          "username": username,
+          "password": password,
           "failed": "error occured"
         })
       } else {
@@ -72,10 +74,10 @@ app.post(rootPost + "/signup", function(req, res) {
 });
 
 app.post(rootPost + "/login", function(req, res) {
-  let username = req.username; //req.body.username;
-  let password = req.password; //req.body.password;
+  let username = req.body.username;
+  let password = req.body.password;
   if(username && password) {
-    connection.query("SELECT * FROM users WHERE username = ? AND password = ?",
+    db.query("SELECT * FROM users WHERE username = ? AND password = ?",
     [username, password], function(err, results, fields) {
       if(results.length > 0) {
         req.session.loggedin = true;

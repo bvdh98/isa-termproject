@@ -1,9 +1,11 @@
 $(function() {
   let postDiv = $("#post-div");
   let makePostDiv = $("#make-post-div");
-  let posts = [];
+
   //get old posts from user
-  GetPosts(posts);
+  let loadPostBttn = $("#load-post-bttn").click(function() {
+    GetPosts();
+  });
 
   let newPostBttn = $("#new-post-bttn").click(function() {
     $.fn.HideNewPostButton();
@@ -78,9 +80,10 @@ $(function() {
 
 //upload old wall posts from posts away
 UploadPosts = function(posts) {
+  console.log("upload posts called");
   for (i = 0; i < posts.length; i++) {
     let postContent = document.createElement('p');
-    postContent.className = "postContent"
+    postContent.className = "postContent";
     let newPostDiv = document.createElement('div');
     //username which will be displayed in post, set to: test for now
     let userName = document.createElement('p');
@@ -111,6 +114,7 @@ UploadPosts = function(posts) {
 
 //create post objects and store them in posts array
 StoreWallPosts = function(posts, postNodeList) {
+  console.log("length : " + postNodeList.results.length);
   for (let i = 0; i < postNodeList.results.length; i++) {
     let wallPost = JSON.parse(postNodeList.results[i]);
     posts.push(wallPost);
@@ -118,7 +122,9 @@ StoreWallPosts = function(posts, postNodeList) {
   }
 };
 
-GetPosts = async function(posts) {
+GetPosts = async function() {
+  let posts = [];
+  console.log("get post called");
   const endPoint = "http://localhost:8888/walls/API/V1/post";
   const response = await fetch(endPoint);
   const postNodeList = await response.json();

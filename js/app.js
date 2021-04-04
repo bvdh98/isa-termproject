@@ -5,16 +5,16 @@ const bodyparser = require("body-parser");
 const port = 8888;
 const app = express();
 const endpointRoot = "/walls/API/V1/post/";
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 
-let app = express();
+/*let app = express();
 app.use(
   session({
     secret: "secret",
     resave: true,
     saveUninitialized: true,
   })
-);
+);*/
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
@@ -28,6 +28,7 @@ const db = mysql.createConnection({
   multipleStatements: true,
 });
 
+/*
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/login.html"));
 });
@@ -43,8 +44,9 @@ app.get("/wall", function(req, res) {
     res.send("Please login to view this page");
   }
   res.end();
-});
+});*/
 
+/*
 app.get("/admin", function(req, res) {
   res.sendFile(path.join(__dirname + "/admin.html"));
 });
@@ -93,20 +95,11 @@ app.post(endpointRoot + "login", function(req, res) {
       }
     );
   }
-});
+});*/
 
 app.post("/walls/API/V1/post/id", (req, res) => {
     let post = req.body;
-    let requestTypeStmt =
-    "INSERT INTO stats (request_type) VALUES('wall_post_req')";
-    let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
-    db.query(requestTypeStmt, function(err, result, fields) {
-        if (err) {
-          console.log(`could not insert request_type wall_post_req: ` + err.stack);
-          res.sendStatus(400);
-        }
-        console.log(`succesfully inserted request_type wall_post_req`);
-      });
+    let wallPostStmt = `INSERT INTO wall (text,date) values ('${post.text}','${post.date}')`;
     db.query(wallPostStmt, function(err, result) {
       if (err) {
         console.log(
@@ -119,17 +112,8 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   });
 
 app.get("/walls/API/V1/post", (req, res) => {
-  let requestTypeStmt =
-    "INSERT INTO stats (request_type) VALUES('wall_get_req')";
-  let postQuery = "SELECT * FROM wall_posts";
+  let postQuery = "SELECT * FROM wall";
   let string = "";
-  db.query(requestTypeStmt, function(err, result, fields) {
-    if (err) {
-      console.log(`could not insert request_type wall_get_req: ` + err.stack);
-      res.sendStatus(400);
-    }
-    console.log(`succesfully inserted request_type wall_get_req`);
-  });
   db.query(postQuery, function(err, result, fields) {
     if (err) {
       console.log(`could not get wall posts: ` + err.stack);

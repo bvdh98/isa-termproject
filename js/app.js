@@ -8,7 +8,6 @@ const port = 8888;
 const app = express();
 const endpointRoot = "/walls";
 const rootPost = "/walls/API/V1/post";
-const mongoose = require('mongoose');
 
 app.use(session({
   secret: 'secret',
@@ -60,7 +59,7 @@ app.post(rootPost + "/signup", function(req, res) {
           "code": 400,
           "username": username,
           "password": password,
-          "failed": "error occured"
+          "failed": err
         })
       } else {
         res.send({
@@ -79,13 +78,17 @@ app.post(rootPost + "/login", function(req, res) {
   if(username && password) {
     db.query("SELECT * FROM users WHERE username = ? AND password = ?",
     [username, password], function(err, results, fields) {
-      if(results.length > 0) {
+      if(err) {
+        res.send({
+          "code": 400,
+          "username": username,
+          "password": password,
+          "failed": err
+        });
+      } else {
         req.session.loggedin = true;
         req.session.username = username;
         res.redirect("/wall");
-      } else {
-        res.send("Please enter a valid username and password!");
-        res.end();
       }
     });
   }

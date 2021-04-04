@@ -9,11 +9,13 @@ const app = express();
 const endpointRoot = "/walls";
 const rootPost = "/walls/API/V1/post";
 
-app.use(session({
-  secret: 'secret',
-  resave: true,
-  saveUninitialized: true
-}));
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
@@ -27,78 +29,83 @@ const db = mysql.createConnection({
   multipleStatements: true,
 });
 
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/../login.html'));
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../login.html"));
 });
 
-app.get('/signup', function(req, res) {
-  res.sendFile(path.join(__dirname + '/../signup.html'));
+app.get("/signup", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../signup.html"));
 });
 
-app.get('/wall', function(req, res) {
-  if(req.session.loggedin) {
-    res.sendFile(path.join(__dirname + '/../wall.html'));
+app.get("/wall", function(req, res) {
+  if (req.session.loggedin) {
+    res.sendFile(path.join(__dirname + "/../wall.html"));
   } else {
     res.send("Please login to view this page");
   }
   res.end();
 });
 
-app.get('/admin', function(req, res) {
-  res.sendFile(path.join(__dirname + '/../admin.html'));
+app.get("/admin", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../admin.html"));
 });
 
-app.post(rootPost + "/signup", function(req, res) {
+app.post("/walls/API/V1/post/signup", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
-  if(username && password) {
-    db.query("INSERT INTO users(username, password) VALUES ?", [username, password],
-    function(err, results, fields) {
-      if(err) {
-        res.send({
-          "code": 400,
-          "username": username,
-          "password": password,
-          "failed": err
-        })
-      } else {
-        res.send({
-          "code": 200,
-          "success": "user registered successfully"
-        });
-        res.redirect("/login");
+  if (username && password) {
+    db.query(
+      "INSERT INTO users(username, password) VALUES ?",
+      [username, password],
+      function(err, results, fields) {
+        if (err) {
+          res.send({
+            code: 400,
+            username: username,
+            password: password,
+            failed: err,
+          });
+        } else {
+          res.send({
+            code: 200,
+            success: "user registered successfully",
+          });
+          res.redirect("/login");
+        }
       }
-    });
+    );
   }
 });
 
 app.post(rootPost + "/login", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
-  if(username && password) {
-    db.query("SELECT * FROM users WHERE username = ? AND password = ?",
-    [username, password], function(err, results, fields) {
-      if(err) {
-        res.send({
-          "code": 400,
-          "username": username,
-          "password": password,
-          "failed": err
-        });
-      } else {
-        req.session.loggedin = true;
-        req.session.username = username;
-        res.redirect("/wall");
+  if (username && password) {
+    db.query(
+      "SELECT * FROM users WHERE username = ? AND password = ?",
+      [username, password],
+      function(err, results, fields) {
+        if (err) {
+          res.send({
+            code: 400,
+            username: username,
+            password: password,
+            failed: err,
+          });
+        } else {
+          req.session.loggedin = true;
+          req.session.username = username;
+          res.redirect("/wall");
+        }
       }
-    });
+    );
   }
 });
 
 app.get("/walls/API/V1/post", (req, res) => {
-  let postQuery =
-    "SELECT * FROM wall_posts";
+  let postQuery = "SELECT * FROM wall_posts";
   let string = "";
-  sqldb.query(postQuery, function(err, result, fields) {
+  db.query(postQuery, function(err, result, fields) {
     if (err) {
       console.log(`could not get wall posts: ` + err.stack);
       res.sendStatus(400);

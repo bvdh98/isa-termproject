@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const port = 8888;
+const app = express();
+const endpointRoot = "/walls/API/V1/post/"
+const mongoose = require('mongoose');
 
 let app = express();
 app.use(express.json());
@@ -10,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(cors());
 
-const db = mysql.createConnection({
+const sqldb = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "root",
@@ -18,25 +21,23 @@ const db = mysql.createConnection({
   multipleStatements: true,
 });
 
-app.post("/walls/API/V1/post/id", (req, res) => {
-  let post = req.body;
-  let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
-  db.query(wallPostStmt, function(err, result) {
-    if (err) {
-      console.log(
-        ` Wall post ${post.text} could not be stored in the DB: ` + err.stack
-      );
-      res.sendStatus(400);
-    }
-    console.log(`Wall post ${post.text} was stored succesfully`);
-  });
+const db = require("../models");
+db.mongoose.connect('mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("Success connecting to MongoDB");
+  initial();
+}).catch(err => {
+  console.error("Connection error", err);
+  process.exit();
 });
 
 app.get("/walls/API/V1/post", (req, res) => {
   let postQuery =
     "SELECT * FROM wall_posts";
   let string = "";
-  db.query(postQuery, function(err, result, fields) {
+  sqldb.query(postQuery, function(err, result, fields) {
     if (err) {
       console.log(`could not get wall posts: ` + err.stack);
       res.sendStatus(400);

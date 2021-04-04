@@ -6,7 +6,8 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const port = 8888;
 const app = express();
-const endpointRoot = "/walls/API/V1/post/"
+const endpointRoot = "/walls";
+const rootPost = "/walls/API/V1/post";
 const mongoose = require('mongoose');
 
 app.use(session({
@@ -48,7 +49,7 @@ app.get('/admin', function(req, res) {
   res.sendFile(path.join(__dirname + '/../admin.html'));
 });
 
-app.post(endpointRoot + "signup", function(req, res) {
+app.post(rootPost + "/signup", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
   if(username && password) {
@@ -70,7 +71,7 @@ app.post(endpointRoot + "signup", function(req, res) {
   }
 });
 
-app.post(endpointRoot + "login", function(req, res) {
+app.post(rootPost + "/login", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
   if(username && password) {

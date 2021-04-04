@@ -1,5 +1,7 @@
 const mysql = require("mysql");
 const express = require("express");
+const path = require("path");
+const session = require("express-session");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const port = 8888;
@@ -7,7 +9,6 @@ const app = express();
 const endpointRoot = "/walls/API/V1/post/"
 const mongoose = require('mongoose');
 
-let app = express();
 app.use(session({
   secret: 'secret',
   resave: true,
@@ -27,16 +28,16 @@ const db = mysql.createConnection({
 });
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname + '/login.html'));
+  res.sendFile(path.join(__dirname + '/../login.html'));
 });
 
 app.get('/signup', function(req, res) {
-  res.sendFile(path.join(__dirname + '/signup.html'));
+  res.sendFile(path.join(__dirname + '/../signup.html'));
 });
 
 app.get('/wall', function(req, res) {
   if(req.session.loggedin) {
-    res.sendFile(path.join(__dirname + '/wall.html'));
+    res.sendFile(path.join(__dirname + '/../wall.html'));
   } else {
     res.send("Please login to view this page");
   }
@@ -44,14 +45,15 @@ app.get('/wall', function(req, res) {
 });
 
 app.get('/admin', function(req, res) {
-  res.sendFile(path.join(__dirname + '/admin.html'));
+  res.sendFile(path.join(__dirname + '/../admin.html'));
 });
 
 app.post(endpointRoot + "signup", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
   if(username && password) {
-    connection.query("INSERT INTO users SET ?", users, function(err, results, fields) {
+    connection.query("INSERT INTO users(username, password) VALUES ?", [username, password],
+    function(err, results, fields) {
       if(err) {
         res.send({
           "code": 400,

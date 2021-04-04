@@ -23,8 +23,8 @@ app.use(cors());
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
-  database: "isa_term_project",
+  password: "rootroot",
+  database: "nodelogin",
   multipleStatements: true,
 });
 
@@ -50,8 +50,8 @@ app.get('/admin', function(req, res) {
 });
 
 app.post(rootPost + "/signup", function(req, res) {
-  let username = req.body.username;
-  let password = req.body.password;
+  let username = req.username; //req.body.username;
+  let password = req.password; //req.body.password;
   if(username && password) {
     connection.query("INSERT INTO users(username, password) VALUES ?", [username, password],
     function(err, results, fields) {
@@ -72,8 +72,8 @@ app.post(rootPost + "/signup", function(req, res) {
 });
 
 app.post(rootPost + "/login", function(req, res) {
-  let username = req.body.username;
-  let password = req.body.password;
+  let username = req.username; //req.body.username;
+  let password = req.password; //req.body.password;
   if(username && password) {
     connection.query("SELECT * FROM users WHERE username = ? AND password = ?",
     [username, password], function(err, results, fields) {

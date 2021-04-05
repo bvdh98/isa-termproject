@@ -20,7 +20,7 @@ const db = mysql.createConnection({
 
 app.post("/walls/API/V1/post/id", (req, res) => {
   let post = req.body;
-  let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
+  let wallPostStmt = `INSERT INTO wall (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
     if (err) {
       console.log(
@@ -34,7 +34,7 @@ app.post("/walls/API/V1/post/id", (req, res) => {
 
 app.get("/walls/API/V1/post", (req, res) => {
   let postQuery =
-    "SELECT * FROM wall_posts";
+    "SELECT * FROM wall";
   let string = "";
   db.query(postQuery, function(err, result, fields) {
     if (err) {

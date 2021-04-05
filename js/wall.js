@@ -77,50 +77,43 @@ $(function() {
 });
 
 //upload old wall posts from posts away
-UploadPosts = function(posts) {
-  for (i = 0; i < posts.length; i++) {
-    let postContent = document.createElement('p');
-    postContent.className = "postContent"
-    let newPostDiv = document.createElement('div');
-    //username which will be displayed in post, set to: test for now
-    let userName = document.createElement('p');
-    userName.innerHTML = "test";
-    let userNameDiv = document.createElement('div');
-    userNameDiv.appendChild(userName);
+UploadPost = function(post) {
+  let postContent = document.createElement("p");
+  postContent.className = "postContent";
+  let newPostDiv = document.createElement("div");
+  //username which will be displayed in post, set to: test for now
+  let userName = document.createElement("p");
+  userName.innerHTML = "test";
+  let userNameDiv = document.createElement("div");
+  userNameDiv.appendChild(userName);
 
-    let dateParagraph = document.createElement('p');
-    dateParagraph.innerHTML = posts[i].date;
-    dateParagraph.className = "ml-4";
-    let dateParagraphDiv = document.createElement('div');
-    dateParagraphDiv.appendChild(dateParagraph);
+  let dateParagraph = document.createElement("p");
+  dateParagraph.innerHTML = post.date;
+  dateParagraph.className = "ml-4";
+  let dateParagraphDiv = document.createElement("div");
+  dateParagraphDiv.appendChild(dateParagraph);
 
-    let topDiv = document.createElement('div');
-    topDiv.className = "mt-4 top-div";
-    topDiv.appendChild(userNameDiv);
-    topDiv.appendChild(dateParagraphDiv);
+  let topDiv = document.createElement("div");
+  topDiv.className = "mt-4 top-div";
+  topDiv.appendChild(userNameDiv);
+  topDiv.appendChild(dateParagraphDiv);
 
-    newPostDiv.appendChild(topDiv);
-    newPostDiv.appendChild(postContent);
+  newPostDiv.appendChild(topDiv);
+  newPostDiv.appendChild(postContent);
 
-    //set the inner html of the postContent paragraph to what user typed in text area
-    postContent.innerHTML = posts[i].text;
-    let postDiv = document.getElementById('post-div');
-    postDiv.appendChild(newPostDiv);
-  }
-};
-
-//create post objects and store them in posts array
-StoreWallPosts = function(posts, postNodeList) {
-  for (let i = 0; i < postNodeList.results.length; i++) {
-    let wallPost = JSON.parse(postNodeList.results[i]);
-    posts.push(wallPost);
-    UploadPosts(posts);
-  }
+  //set the inner html of the postContent paragraph to what user typed in text area
+  postContent.innerHTML = post.text;
+  let postDiv = document.getElementById("post-div");
+  postDiv.appendChild(newPostDiv);
 };
 
 GetPosts = async function(posts) {
   const endPoint = "http://localhost:8888/walls/API/V1/post";
   const response = await fetch(endPoint);
   const postNodeList = await response.json();
-  StoreWallPosts(posts, postNodeList);
+  for (let i = 0; i < postNodeList.results.length; i++) {
+    let wallPost = JSON.parse(postNodeList.results[i]);
+    posts.push(wallPost);
+    UploadPost(wallPost);
+  }
 };

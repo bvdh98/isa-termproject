@@ -10,6 +10,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(cors());
 
+let posts = {};
+posts.wall_post_req = 0;
+posts.wall_get_req = 0;
+
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -19,6 +23,8 @@ const db = mysql.createConnection({
 });
 
 app.post("/walls/API/V1/post/id", (req, res) => {
+  posts.wall_post_req ++;
+  console.log(posts.wall_post_req);
   let post = req.body;
   let wallPostStmt = `INSERT INTO wall (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
@@ -33,8 +39,9 @@ app.post("/walls/API/V1/post/id", (req, res) => {
 });
 
 app.get("/walls/API/V1/post", (req, res) => {
-  let postQuery =
-    "SELECT * FROM wall";
+  posts.wall_get_req ++;
+  console.log(posts.wall_get_req);
+  let postQuery = "SELECT * FROM wall";
   let string = "";
   db.query(postQuery, function(err, result, fields) {
     if (err) {
@@ -50,6 +57,11 @@ app.get("/walls/API/V1/post", (req, res) => {
     string = JSON.stringify(query_obj);
     res.send(string);
   });
+});
+
+app.get("/walls/API/V1/admin/stats", (req, res) => {
+  let string = JSON.stringify(posts);
+  res.send(string);
 });
 
 app.listen(port, () => {

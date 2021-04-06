@@ -1,10 +1,21 @@
 const mysql = require("mysql");
 const express = require("express");
+const path = require("path");
+const session = require("express-session");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const port = 8888;
+const app = express();
+const endpointRoot = "/walls";
+const rootPost = "/walls/API/V1/post";
 
-let app = express();
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
@@ -17,8 +28,8 @@ posts.wall_get_req = 0;
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
-  database: "isa_term_project",
+  password: "rootroot",
+  database: "nodelogin",
   multipleStatements: true,
 });
 
@@ -26,7 +37,7 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   posts.wall_post_req ++;
   console.log(posts.wall_post_req);
   let post = req.body;
-  let wallPostStmt = `INSERT INTO wall (text,date) values ('${post.text}','${post.date}')`;
+  let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
     if (err) {
       console.log(
@@ -38,25 +49,79 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   });
 });
 
-app.get("/walls/API/V1/post", (req, res) => {
-  posts.wall_get_req ++;
-  console.log(posts.wall_get_req);
-  let postQuery = "SELECT * FROM wall";
-  let string = "";
-  db.query(postQuery, function(err, result, fields) {
-    if (err) {
-      console.log(`could not get wall posts: ` + err.stack);
-      res.sendStatus(400);
-    }
-    console.log(`Got all wall posts`);
-    let query_obj = { results: [] };
-    for (let i = 0; i < result.length; i++) {
-      query_obj["results"].push(JSON.stringify(result[i]));
-    }
-    console.log(query_obj.results);
-    string = JSON.stringify(query_obj);
-    res.send(string);
-  });
+
+
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../login.html"));
+});
+
+app.get("/signup", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../signup.html"));
+});
+
+app.get("/wall", function(req, res) {
+  if (req.session.loggedin) {
+    res.sendFile(path.join(__dirname + "/../wall.html"));
+  } else {
+    res.send("Please login to view this page");
+  }
+  res.end();
+});
+
+app.get("/admin", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../admin.html"));
+});
+
+app.post("/walls/API/V1/post/signup", function(req, res) {
+  let username = req.body.username;
+  let password = req.body.password;
+  if (username && password) {
+    db.query(
+      "INSERT INTO users(username, password) VALUES ?",
+      [username, password],
+      function(err, results, fields) {
+        if (err) {
+          res.send({
+            code: 400,
+            username: username,
+            password: password,
+            failed: err,
+          });
+        } else {
+          res.send({
+            code: 200,
+            success: "user registered successfully",
+          });
+          res.redirect("/login");
+        }
+      }
+    );
+  }
+});
+
+app.post(rootPost + "/login", function(req, res) {
+  let username = req.body.username;
+  let password = req.body.password;
+  if (username && password) {
+    db.query(
+      "SELECT * FROM users WHERE username = ? AND password = ?",
+      [username, password],
+      function(err, results, fields) {
+        if (err) {
+          res.send({
+            code: 400,
+            username: username,
+            password: password,
+            failed: err,
+          });
+        } else {
+          req.session.loggedin = true;
+          req.session.username = username;
+          res.redirect("/wall");
+        }
+      }
+    );
+  }
 });
 
 app.get("/walls/API/V1/admin/stats", (req, res) => {

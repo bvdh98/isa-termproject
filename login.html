@@ -17,18 +17,18 @@
             <h1 class="display-4">Welcome to Post-it</h1>
             <hr class="my-4">
             <h4 class="display-12">Make a post about anything you want</h4>
-            <form id="login-form">
+            <form action="/walls/API/V1/post/login" method="post">
                 <label for="username">username:</label><br>
                 <input type="text" id="login-username" name="username" required><br>
                 <label for="password">password</label><br>
                 <input type="password" id="login-password" name="password" required><br><br>
                 <div>
-                    <button type="submit">Login</button>
+                    <input type="submit" value="Login">
                 </div>
             </form>
             <h6 class="display-12 mt-4">Don`t have an account? Register here</h6>
             <div class="mt-4">
-                <button type="button"><a href="./signup.html">Register</a></button>
+                <button type="button"><a href="./signup">Register</a></button>
             </div>
             <p id="user-confirmation">
             </p>

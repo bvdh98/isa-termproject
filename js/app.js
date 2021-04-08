@@ -41,12 +41,9 @@ app.get('/walls/API/V1/post/admin', (req, res) => {
 })
 
 app.post("/walls/API/V1/post/id", (req, res) => {
-<<<<<<< Updated upstream
   posts.wall_post_req ++;
   console.log(posts.wall_post_req);
-=======
   pingCountId++;
->>>>>>> Stashed changes
   let post = req.body;
   let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
@@ -59,8 +56,6 @@ app.post("/walls/API/V1/post/id", (req, res) => {
     console.log(`Wall post ${post.text} was stored succesfully`);
   });
 });
-
-<<<<<<< Updated upstream
 
 
 app.get("/", function(req, res) {
@@ -160,7 +155,6 @@ app.get("/walls/API/V1/post", (req, res) => {
     string = JSON.stringify(query_obj);
     res.send(string);
   });
->>>>>>> Stashed changes
 });
 
 app.listen(port, () => {

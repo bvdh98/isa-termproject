@@ -24,21 +24,40 @@ $(function() {
   };
 
   //send post to server
-  $.fn.SendPost = function(text, date) {
+  $.fn.SendPost = async function(text, date) {
     let post = {};
     post.text = text;
     post.date = date;
 
-    const endPoint = "http://localhost:8888/walls/API/V1/post/id";
+    const postMethod = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(post),
+    };
+    const response = await fetch("http://localhost:8888/walls/API/V1/post",
+    postMethod);
+    if (response.status == 200) {
+      alert("Post saved successfully");
+    } 
+    else {
+      alert("Failed to save post");
+    }
+    /*
+    const endPoint = "http://localhost:8888/walls/API/V1/post";
     const xhttp = new XMLHttpRequest();
     xhttp.open("POST", endPoint, true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSON.stringify(post));
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        //document.getElementById("response").innerHTML = this.responseText;
+        alert("Wall post saved successfully");
       }
-    };
+      else{
+        alert("Wall post could not be saved");
+      }
+    };*/
   };
 
   $.fn.PostToWall = function() {
@@ -145,6 +164,7 @@ OnUpdate = function(updateBttn, editBttn, deleteBttn, postContent, post) {
   UpdateWallPost(post);
 };
 
+//ajax call to delete wall post from server
 DeleteWallPost = async function(post) {
   const deleteMethod = {
     method: "DELETE",

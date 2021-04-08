@@ -33,7 +33,8 @@ const db = mysql.createConnection({
   multipleStatements: true,
 });
 
-app.post("/walls/API/V1/post/id", (req, res) => {
+//TODO:make compatible with users
+app.post("/walls/API/V1/post", (req, res) => {
   posts.wall_post_req ++;
   console.log(posts.wall_post_req);
   let post = req.body;
@@ -46,9 +47,11 @@ app.post("/walls/API/V1/post/id", (req, res) => {
       res.sendStatus(400);
     }
     console.log(`Wall post ${post.text} was stored succesfully`);
+    res.sendStatus(200);
   });
 });
 
+//TODO:make compatible with users
 app.get("/walls/API/V1/post", (req, res) => {
   let postQuery = "SELECT * FROM wall";
   let string = "";
@@ -68,6 +71,7 @@ app.get("/walls/API/V1/post", (req, res) => {
   });
 });
 
+//TODO:make compatible with users
 app.put("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
   let putStmt = `UPDATE wall SET text = '${post.text}', date = '${post.date}' WHERE wall_id = ${req.params.id}`;
@@ -81,6 +85,7 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
   });
 });
 
+//TODO:make compatible with users
 app.delete("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
   let deleteStmt = `DELETE FROM wall WHERE wall_id = ${req.params.id}`;

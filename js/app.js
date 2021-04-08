@@ -28,8 +28,8 @@ posts.wall_get_req = 0;
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "rootroot",
-  database: "nodelogin",
+  password: "root",
+  database: "isa_term_project",
   multipleStatements: true,
 });
 
@@ -37,7 +37,7 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   posts.wall_post_req ++;
   console.log(posts.wall_post_req);
   let post = req.body;
-  let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
+  let wallPostStmt = `INSERT INTO wall (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
     if (err) {
       console.log(
@@ -49,7 +49,50 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   });
 });
 
+app.get("/walls/API/V1/post", (req, res) => {
+  let postQuery = "SELECT * FROM wall";
+  let string = "";
+  db.query(postQuery, function(err, result, fields) {
+    if (err) {
+      console.log(`could not get wall posts: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Got all wall posts`);
+    let query_obj = { results: [] };
+    for (let i = 0; i < result.length; i++) {
+      query_obj["results"].push(JSON.stringify(result[i]));
+    }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
+  });
+});
 
+app.put("/walls/API/V1/post/:id", (req, res) => {
+  let post = req.body;
+  let putStmt = `UPDATE wall SET text = '${post.text}', date = '${post.date}' WHERE wall_id = ${req.params.id}`;
+  db.query(putStmt, function(err, result, fields) {
+    if (err) {
+      console.log(`could not update wall post: ${post.text}: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Updated wall post: ${post.text}`);
+    res.sendStatus(200);
+  });
+});
+
+app.delete("/walls/API/V1/post/:id", (req, res) => {
+  let post = req.body;
+  let deleteStmt = `DELETE FROM wall WHERE wall_id = ${req.params.id}`;
+  db.query(deleteStmt, function(err, result, fields) {
+    if (err) {
+      console.log(`could not delete wall post ${post.text}: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Deleted wall post: ${post.text}`);
+    res.sendStatus(200);
+  });
+});
 
 app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname + "/../login.html"));

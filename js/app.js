@@ -135,6 +135,7 @@ app.post(rootPost + "/login", function(req, res) {
 app.get("/walls/API/V1/admin/stats", (req, res) => {
   let string = JSON.stringify(posts);
   res.send(string);
+});
 
 app.get("/walls/API/V1/post", (req, res) => {
   pingCountPost++;

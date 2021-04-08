@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
@@ -60,12 +60,13 @@ app.get("/signup", function(req, res) {
 });
 
 app.get("/wall", function(req, res) {
+  console.log("here ", req.session.loggedin);
   if (req.session.loggedin) {
     res.sendFile(path.join(__dirname + "/../wall.html"));
   } else {
     res.send("Please login to view this page");
   }
-  res.end();
+  //res.end();
 });
 
 app.get("/admin", function(req, res) {
@@ -75,10 +76,12 @@ app.get("/admin", function(req, res) {
 app.post("/walls/API/V1/post/signup", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
+  let values = [username, password];
+  console.log(username, password);
+  console.log(typeof username, typeof password);
   if (username && password) {
     db.query(
-      "INSERT INTO users(username, password) VALUES ?",
-      [username, password],
+      "INSERT INTO users (username, password) VALUES (?, ?)", [username, password],
       function(err, results, fields) {
         if (err) {
           res.send({
@@ -88,11 +91,7 @@ app.post("/walls/API/V1/post/signup", function(req, res) {
             failed: err,
           });
         } else {
-          res.send({
-            code: 200,
-            success: "user registered successfully",
-          });
-          res.redirect("/login");
+          res.redirect("/");
         }
       }
     );
@@ -102,6 +101,8 @@ app.post("/walls/API/V1/post/signup", function(req, res) {
 app.post(rootPost + "/login", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
+  console.log(username, password);
+  console.log(req.session.loggedin);
   if (username && password) {
     db.query(
       "SELECT * FROM users WHERE username = ? AND password = ?",

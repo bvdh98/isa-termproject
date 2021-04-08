@@ -10,7 +10,7 @@ function Signup() {
   user.password = password;
   const endPoint = "http://localhost:8888/walls/API/V1/post/signup";
   const xhttp = new XMLHttpRequest();
-  xhttp.open("POST", endPoint, true);
+  xhttp.open("POST", '/walls/API/V1/post/signup', true);
   xhttp.setRequestHeader("Content-type", "application/json");
   console.log(JSON.stringify(user));
   xhttp.send(JSON.stringify(user));

@@ -33,9 +33,20 @@ const db = mysql.createConnection({
   multipleStatements: true,
 });
 
+let pingCountId = 0;
+let pingCountPost = 0;
+
+app.get('/walls/API/V1/post/admin', (req, res) => {
+  res.send("Pinged post /walls/API/V1/postid ${pingCountId} times.\nPinged get /walls/API/V1/post ${pingCountPost} times.");
+})
+
 app.post("/walls/API/V1/post/id", (req, res) => {
+<<<<<<< Updated upstream
   posts.wall_post_req ++;
   console.log(posts.wall_post_req);
+=======
+  pingCountId++;
+>>>>>>> Stashed changes
   let post = req.body;
   let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
@@ -49,6 +60,7 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   });
 });
 
+<<<<<<< Updated upstream
 
 
 app.get("/", function(req, res) {
@@ -128,6 +140,27 @@ app.post(rootPost + "/login", function(req, res) {
 app.get("/walls/API/V1/admin/stats", (req, res) => {
   let string = JSON.stringify(posts);
   res.send(string);
+=======
+app.get("/walls/API/V1/post", (req, res) => {
+  pingCountPost++;
+  let postQuery =
+    "SELECT * FROM wall";
+  let string = "";
+  db.query(postQuery, function(err, result, fields) {
+    if (err) {
+      console.log(`could not get wall posts: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Got all wall posts`);
+    let query_obj = { results: [] };
+    for (let i = 0; i < result.length; i++) {
+      query_obj["results"].push(JSON.stringify(result[i]));
+    }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
+  });
+>>>>>>> Stashed changes
 });
 
 app.listen(port, () => {

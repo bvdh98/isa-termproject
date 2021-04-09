@@ -20,6 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(cors());
+app.use(express.static(__dirname + '/static'));
 
 let posts = {};
 posts.wall_post_req = 0;
@@ -45,6 +46,7 @@ app.post("/walls/API/V1/post/id", (req, res) => {
   console.log(posts.wall_post_req);
   pingCountId++;
   let post = req.body;
+  console.log(post);
   let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
   db.query(wallPostStmt, function(err, result) {
     if (err) {

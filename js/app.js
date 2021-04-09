@@ -113,7 +113,6 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
   });
 });
 
-//TODO:make compatible with users
 app.delete("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
   let deleteStmt = `DELETE FROM wall_posts WHERE wall_post_id = ${req

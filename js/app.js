@@ -205,6 +205,24 @@ app.post(rootPost + "/login", function(req, res) {
   }
 });
 
+app.delete("/walls/API/V1/user/delete", (req, res) => {
+  let sql_statement = 'DELETE FROM users WHERE id='${currentUser.id};
+  if(req.session.loggedin) {
+    db.query(sql_statement, function(err, result) {
+      if(err) {
+        console.log("failed to delete user");
+      } else {
+        req.session.destroy(function(err){
+          if(err) {
+            console.log(err);
+          } else {
+            res.sendStatus(200);
+          }
+      }
+    });
+  }
+});
+
 app.get("/walls/API/V1/user/logout", (req, res) => {
   req.session.destroy(function(err){
     if(err) {

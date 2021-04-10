@@ -1,3 +1,7 @@
+const domainURL = "http://localhost:8888";
+const endPoint = "/walls/API/V1";
+
+
 $(function() {
   let postDiv = $("#post-div");
   let makePostDiv = $("#make-post-div");
@@ -36,7 +40,7 @@ $(function() {
       },
       body: JSON.stringify(post),
     };
-    const response = await fetch("http://localhost:8888/walls/API/V1/post",
+    const response = await fetch(domainURL.concat(endPoint, "/post"),
     postMethod);
     if (response.status == 200) {
       alert("Post saved successfully");
@@ -158,10 +162,11 @@ LogOut = async function() {
       "Content-type": "application/json; charset=UTF-8",
     }
   };
-  const response = await fetch("http://localhost:8888/walls/API/V1/user/logout", getMethod);
+
+  const response = await fetch(domainURL.concat(endPoint, "/user/logout"), getMethod);
   if(response.status == 200) {
     alert("Logout Successful");
-    window.location.assign("http://localhost:8888");
+    window.location.assign(domainURL);
   }
 };
 
@@ -180,8 +185,8 @@ DeleteWallPost = async function(post) {
     },
     body: JSON.stringify(post),
   };
-  let id = post.wall_post_id
-  const response = await fetch("http://localhost:8888/walls/API/V1/post/" + id,
+  let id = post.wall_post_id;
+  const response = await fetch(domainURL.concat(endPoint, "/post/") + id,
     deleteMethod
   );
   if (response.status == 200) {
@@ -202,7 +207,7 @@ UpdateWallPost = async function(post) {
   };
   let id = post.wall_post_id;
   const response = await fetch(
-    "http://localhost:8888/walls/API/V1/post/" + id,
+    domainURL.concat(endPoint, "/post/") + id,
     putMethod
   );
   if (response.status == 200) {
@@ -230,7 +235,7 @@ OnEdit = function(postContent, editBttn, deleteBttn, newPostDiv, post) {
 };
 
 GetPosts = async function(posts) {
-  const endPoint = "http://localhost:8888/walls/API/V1/post";
+  const endPoint = domainURL.concat(endPoint, "/post");
   const response = await fetch(endPoint);
   const postNodeList = await response.json();
   for (let i = 0; i < postNodeList.results.length; i++) {

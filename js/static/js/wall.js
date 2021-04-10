@@ -23,6 +23,10 @@ $(function() {
     $("#new-post-bttn").hide();
   };
 
+  $("#profile-bttn").click(function(){
+    GoToProfile();
+  })
+
   //send post to server
   $.fn.SendPost = async function(text, date) {
     let post = {};
@@ -82,6 +86,14 @@ $(function() {
     }
   };
 });
+
+GoToProfile = async function(){
+  const endPoint = "http://localhost:8888/profile";
+  const response = await fetch(endPoint);
+  if(response.status == 200) {
+      window.location.assign("http://localhost:8888/profile");
+  }
+}
 
 //upload old wall posts from posts away
 UploadPost = function(post) {

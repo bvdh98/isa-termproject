@@ -115,8 +115,8 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
 
 app.delete("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
-  let deleteStmt = `DELETE FROM wall_posts WHERE wall_post_id = ${req
-    .params.id}`;
+  let deleteStmt = `DELETE FROM wall_posts WHERE wall_post_id = ${req.params
+    .id}`;
   db.query(deleteStmt, function(err, result, fields) {
     if (err) {
       console.log(`could not delete wall post ${post.text}: ` + err.stack);
@@ -133,6 +133,10 @@ app.get("/", function(req, res) {
 
 app.get("/signup", function(req, res) {
   res.sendFile(path.join(__dirname + "/../signup.html"));
+});
+
+app.get("/profile", function(req, res) {
+  res.sendFile(path.join(__dirname + "/../profile.html"));
 });
 
 app.get("/wall", function(req, res) {
@@ -198,13 +202,54 @@ app.post(rootPost + "/login", function(req, res) {
           currentUser.id = result[0].id;
           req.session.loggedin = true;
           req.session.username = username;
-          res.redirect("/wall");
+          res.redirect("/profile");
         } else {
-          res.redirect(404, '/');
+          res.redirect(404, "/");
         }
       }
     );
   }
+});
+
+app.get("/walls/API/V1/user/profile", (req, res) => {
+  let userQuery = `SELECT * FROM users WHERE id = ${currentUser.id}`;
+  let string = "";
+  db.query(userQuery, function(err, result, fields) {
+    if (err) {
+      console.log(`could not get user: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Got user`);
+    let query_obj = { results: [] };
+    for (let i = 0; i < result.length; i++) {
+      query_obj["results"].push(JSON.stringify(result[i]));
+    }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
+  });
+});
+
+app.put("/walls/API/V1/user/profile", (req, res) => {
+  let profile = req.body;
+  let putStmt = `UPDATE users SET displayName = ?,about = ? WHERE id = ?`;
+  db.query(
+    putStmt,
+    [profile.displayName,profile.about,currentUser.id],
+    function(err, result, fields) {
+      if (err) {
+        console.log(
+          `could not update profile of user with id: ${currentUser.id}` +
+            err.stack
+        );
+        res.sendStatus(400);
+      }
+      console.log(
+        `Successfully updated profile of user with id: ${currentUser.id}`
+      );
+      res.sendStatus(200);
+    }
+  );
 });
 
 app.get("/walls/API/V1/admin/stats", (req, res) => {

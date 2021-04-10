@@ -206,11 +206,15 @@ app.post(rootPost + "/login", function(req, res) {
 });
 
 app.get("/walls/API/V1/user/logout", (req, res) => {
-  if(req.session) {
-    req.session.cookie.maxAge = 0;
-    delete req.session;
-  }
-  res.redirect('/');
+  req.session.destroy(function(err){
+    if(err) {
+      console.log(err);
+    } else {
+      console.log('HEREEEEE');
+      res.redirect('/');
+    }
+  });
+  //res.redirect('/');
 });
 
 app.get("/walls/API/V1/admin/stats", (req, res) => {

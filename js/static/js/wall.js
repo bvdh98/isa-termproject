@@ -40,7 +40,7 @@ $(function() {
     postMethod);
     if (response.status == 200) {
       alert("Post saved successfully");
-    } 
+    }
     else {
       alert("Failed to save post");
     }
@@ -150,6 +150,26 @@ OnUpdate = function(updateBttn, editBttn, deleteBttn, postContent, post) {
   post.text = postContent.innerHTML;
   UpdateWallPost(post);
 };
+
+LogOut = async function() {
+  const getMethod = {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    }
+  };
+  const response = await fetch("http://localhost:8888/walls/API/V1/user/logout", getMethod);
+  if(response.status == 200) {
+    alert("Logout Successful");
+    window.location.assign("http://localhost:8888");
+  }
+};
+
+let logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", function() {
+    LogOut();
+});
 
 //ajax call to delete wall post from server
 DeleteWallPost = async function(post) {

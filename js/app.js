@@ -42,20 +42,25 @@ app.get('/walls/API/V1/post/admin', (req, res) => {
 })
 
 app.post("/walls/API/V1/post/id", (req, res) => {
-  posts.wall_post_req ++;
-  console.log(posts.wall_post_req);
-  pingCountId++;
-  let post = req.body;
-  console.log(post);
-  let wallPostStmt = `INSERT INTO wall_posts (text,date) values ('${post.text}','${post.date}')`;
-  db.query(wallPostStmt, function(err, result) {
-    if (err) {
-      console.log(
-        ` Wall post ${post.text} could not be stored in the DB: ` + err.stack
-      );
-      res.sendStatus(400);
+  //console.log("testtt ", req.session.username, req.session.id, req.session);
+  console.log(req.session.username);
+  db.query('SELECT id FROM users WHERE username = ?', [req.session.username],
+  function(err, result) {
+    if(err) throw err;
+    let id = JSON.parse(JSON.stringify(result[0]['id']));
+    console.log(req.body.text, req.body.date, id);
+    if(result.length > 0) {
+      db.query('INSERT INTO wall_posts (text, date, users_id) VALUES (?, ?, ?)', [req.body.text, req.body.date, id],
+      function(err, results, fields) {
+        if(err) {
+          console.log(err);
+          res.send({
+            code: 400,
+            failed: err
+          });
+        }
+      });
     }
-    console.log(`Wall post ${post.text} was stored succesfully`);
   });
 });
 
@@ -124,10 +129,12 @@ app.post(rootPost + "/login", function(req, res) {
             password: password,
             failed: err,
           });
-        } else {
+        } else if (results.length > 0) {
           req.session.loggedin = true;
           req.session.username = username;
           res.redirect("/wall");
+        } else {
+          res.redirect(404, '/');
         }
       }
     );
@@ -141,22 +148,24 @@ app.get("/walls/API/V1/admin/stats", (req, res) => {
 
 app.get("/walls/API/V1/post", (req, res) => {
   pingCountPost++;
-  let postQuery =
-    "SELECT * FROM wall";
-  let string = "";
-  db.query(postQuery, function(err, result, fields) {
-    if (err) {
-      console.log(`could not get wall posts: ` + err.stack);
-      res.sendStatus(400);
+  db.query('SELECT id FROM users WHERE username = ?', [req.session.username],
+  function(err, result) {
+    if(err) throw err;
+    let id = JSON.parse(JSON.stringify(result[0]['id']));
+    if(result.length > 0) {
+      db.query('SELECT * FROM wall_posts WHERE users_id = ?', [id],
+      function(err, result) {
+        if(err) {
+          res.sendStatus(400);
+        }
+        let query_obj = { results: [] };
+        for(let i = 0; i < result.length; i++) {
+          query_obj["results"].push(JSON.stringify(result[i]));
+        }
+        let convert_to_string = JSON.stringify(query_obj);
+        res.send(convert_to_string);
+      });
     }
-    console.log(`Got all wall posts`);
-    let query_obj = { results: [] };
-    for (let i = 0; i < result.length; i++) {
-      query_obj["results"].push(JSON.stringify(result[i]));
-    }
-    console.log(query_obj.results);
-    string = JSON.stringify(query_obj);
-    res.send(string);
   });
 });
 

@@ -12,7 +12,7 @@ $(function() {
     );
     let postBttn = $('<button type="button">Post</button>');
     postBttn.click(function() {
-      $.fn.PostToWall();
+      $.fn.CreateWallPost();
     });
     let postBttnDiv = $("<div></div>");
     postBttnDiv.append(postBttn);
@@ -24,27 +24,34 @@ $(function() {
   };
 
   //send post to server
-  $.fn.SendPost = function(text, date) {
+  $.fn.SendPost = async function(text, date) {
     let post = {};
     post.text = text;
     post.date = date;
 
-    const endPoint = "http://localhost:8888/walls/API/V1/post/id";
-    const xhttp = new XMLHttpRequest();
-    xhttp.open("POST", endPoint, true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(JSON.stringify(post));
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        //document.getElementById("response").innerHTML = this.responseText;
-      }
+    const postMethod = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify(post),
     };
+    const response = await fetch("http://localhost:8888/walls/API/V1/post",
+    postMethod);
+    if (response.status == 200) {
+      alert("Post saved successfully");
+    } 
+    else {
+      alert("Failed to save post");
+    }
   };
 
-  $.fn.PostToWall = function() {
+  //let user create wall post
+  $.fn.CreateWallPost = function() {
     let textArea = $("#walltextarea");
     let postContent = $(`<p class="postContent"></p>`);
     let newPostDiv = $("<div></div>");
+
     //username which will be displayed in post, set to: test for now
     let userName = ($("<p></p>").innerHTML = "test");
     let userNameDiv = $(`<div></div>`);
@@ -79,8 +86,25 @@ $(function() {
 //upload old wall posts from posts away
 UploadPost = function(post) {
   let postContent = document.createElement("p");
+  postContent.id = "postcontentof" + post.wall_post_id;
   postContent.className = "postContent";
   let newPostDiv = document.createElement("div");
+  let editBttn = document.createElement("button");
+  let deleteBttn = document.createElement("button");
+
+  editBttn.className = "edit-bttn";
+  editBttn.innerHTML = "Edit";
+  deleteBttn.innerHTML = "Delete";
+  deleteBttn.className = "ml-4 delete-bttn";
+
+  editBttn.addEventListener("click", function() {
+    OnEdit(postContent, editBttn, deleteBttn, newPostDiv, post);
+  });
+
+  deleteBttn.addEventListener("click", function() {
+    OnDelete(newPostDiv,post);
+  });
+
   //username which will be displayed in post, set to: test for now
   let userName = document.createElement("p");
   userName.innerHTML = "test";
@@ -100,11 +124,89 @@ UploadPost = function(post) {
 
   newPostDiv.appendChild(topDiv);
   newPostDiv.appendChild(postContent);
+  newPostDiv.appendChild(editBttn);
+  newPostDiv.appendChild(deleteBttn);
 
   //set the inner html of the postContent paragraph to what user typed in text area
   postContent.innerHTML = post.text;
   let postDiv = document.getElementById("post-div");
   postDiv.appendChild(newPostDiv);
+};
+
+OnDelete = function(newPostDiv,post) {
+  newPostDiv.remove();
+  DeleteWallPost(post);
+};
+
+//updates users post with new content
+OnUpdate = function(updateBttn, editBttn, deleteBttn, postContent, post) {
+  //remove update button from dom
+  updateBttn.remove();
+  //make other buttons visible
+  editBttn.style.visibility = "visible";
+  deleteBttn.style.visibility = "visible";
+  //make postcontent non editable
+  postContent.contentEditable = false;
+  post.text = postContent.innerHTML;
+  UpdateWallPost(post);
+};
+
+//ajax call to delete wall post from server
+DeleteWallPost = async function(post) {
+  const deleteMethod = {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify(post),
+  };
+  let id = post.wall_post_id
+  const response = await fetch("http://localhost:8888/walls/API/V1/post/" + id,
+    deleteMethod
+  );
+  if (response.status == 200) {
+    alert("Deleted post successfully");
+  } else {
+    alert("Failed to delete post");
+  }
+};
+
+//ajax call to server to update wall post
+UpdateWallPost = async function(post) {
+  const putMethod = {
+    method: "PUT",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify(post),
+  };
+  let id = post.wall_post_id;
+  const response = await fetch(
+    "http://localhost:8888/walls/API/V1/post/" + id,
+    putMethod
+  );
+  if (response.status == 200) {
+    alert("Update successful");
+  } else {
+    alert("Update failed");
+  }
+};
+
+//when the edit button is clicked: allow user to edit a post
+OnEdit = function(postContent, editBttn, deleteBttn, newPostDiv, post) {
+  //make postcontent editable
+  postContent.contentEditable = true;
+  //hide other buttons
+  editBttn.style.visibility = "hidden";
+  deleteBttn.style.visibility = "hidden";
+
+  //add update button to update post
+  let updateBttn = document.createElement("button");
+  updateBttn.innerHTML = "Update";
+  updateBttn.addEventListener("click", function() {
+    OnUpdate(updateBttn, editBttn, deleteBttn, postContent, post);
+  });
+  newPostDiv.appendChild(updateBttn);
 };
 
 GetPosts = async function(posts) {

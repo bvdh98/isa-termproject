@@ -167,6 +167,18 @@ app.get("/wall", function(req, res) {
   //res.end();
 });
 
+app.get("/walls/API/V1/user/logout", (req, res) => {
+  req.session.destroy(function(err){
+    if(err) {
+      console.log(err);
+    } else {
+      console.log('HEREEEEE');
+      res.redirect('/');
+    }
+  });
+  //res.redirect('/');
+});
+
 app.get("/walls/API/V1/admin/stats", (req, res) => {
   let statsStmt = `SELECT * FROM stats`;
   let string = "";

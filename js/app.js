@@ -130,6 +130,14 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
   });
 });
 
+app.post("/walls/API/V1/user/logout", (req, res) => {
+  if(req.session) {
+    req.session.cookie.maxAge = 0;
+    delete req.session;
+  }
+  res.redirect('/');
+});
+
 app.delete("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
   let deleteStmt = `DELETE FROM wall_posts WHERE wall_post_id = ${req.params
@@ -246,6 +254,25 @@ app.post(rootPost + "/login", function(req, res) {
         }
       }
     );
+  }
+});
+
+app.delete("/walls/API/V1/user/delete", (req, res) => {
+  let sql_statement = 'Delete FROM users where id=${currentUser.id}';
+  if(req.session.loggedin) {
+    db.query(sql_statement, function(err, result) {
+      if(err) {
+        console.log("failed to delete user");
+      } else {
+        req.session.destroy(function(err) {
+          if(err) {
+            console.log(err);
+          } else {
+            res.sendStatus(200);
+          }
+        });
+      }
+    });
   }
 });
 

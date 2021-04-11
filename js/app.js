@@ -47,8 +47,8 @@ posts.wall_get_req = 0;
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
-  database: "isa_term_project",
+  password: "rootroot",
+  database: "nodelogin",
   multipleStatements: true,
 });
 
@@ -268,24 +268,10 @@ app.get("/walls/API/V1/post", (req, res) => {
     let query_obj = { results: [] };
     for (let i = 0; i < result.length; i++) {
       query_obj["results"].push(JSON.stringify(result[i]));
-  db.query('SELECT id FROM users WHERE username = ?', [req.session.username],
-  function(err, result) {
-    if(err) throw err;
-    let id = JSON.parse(JSON.stringify(result[0]['id']));
-    if(result.length > 0) {
-      db.query('SELECT * FROM wall_posts WHERE users_id = ?', [id],
-      function(err, result) {
-        if(err) {
-          res.sendStatus(400);
-        }
-        let query_obj = { results: [] };
-        for(let i = 0; i < result.length; i++) {
-          query_obj["results"].push(JSON.stringify(result[i]));
-        }
-        let convert_to_string = JSON.stringify(query_obj);
-        res.send(convert_to_string);
-      });
     }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
   });
 });*/
 

@@ -47,8 +47,8 @@ posts.wall_get_req = 0;
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
-  database: "isa_term_project",
+  password: "rootroot",
+  database: "nodelogin",
   multipleStatements: true,
 });
 
@@ -130,12 +130,14 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
   });
 });
 
-app.post("/walls/API/V1/user/logout", (req, res) => {
-  if(req.session) {
-    req.session.cookie.maxAge = 0;
-    delete req.session;
+app.get("/walls/API/V1/user/logout", (req, res) => {
+  req.session.destroy(function(err) {
+    if(err) {
+      console.log(err);
+    } else {
+      delete req.session;
+    }
   }
-  res.redirect('/');
 });
 
 app.delete("/walls/API/V1/post/:id", (req, res) => {

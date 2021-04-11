@@ -26,6 +26,10 @@ $(function() {
     $("#new-post-bttn").hide();
   };
 
+  $("#profile-bttn").click(function(){
+    GoToProfile();
+  })
+
   //send post to server
   $.fn.SendPost = async function(text, date) {
     let post = {};
@@ -54,21 +58,15 @@ $(function() {
     let postContent = $(`<p class="postContent"></p>`);
     let newPostDiv = $("<div></div>");
 
-    //username which will be displayed in post, set to: test for now
-    let userName = ($("<p></p>").innerHTML = "test");
-    let userNameDiv = $(`<div></div>`);
-    userNameDiv.append(userName);
-
     //date that will be displayed in post
     let d = new Date();
     let strDate =
       d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
     let dateParagraph = ($("<p></p>").innerHTML = strDate);
-    let dateParagraphDiv = $('<div class="ml-4"></div>');
+    let dateParagraphDiv = $('<div></div>');
     dateParagraphDiv.append(dateParagraph);
 
     let topDiv = $(`<div class="mt-4"></div>`).append(
-      userNameDiv,
       dateParagraphDiv
     );
     topDiv.attr("class", "top-div");
@@ -87,6 +85,13 @@ $(function() {
 
 const domainURL = "http://localhost:8888";
 let endPoint = "/walls/API/V1";
+
+GoToProfile = async function(){
+  const response = await fetch(domainURL.concat("/profile"));
+  if(response.status == 200) {
+      window.location.assign(domainURL.concat("/profile"));
+  }
+}
 
 //upload old wall posts from posts away
 UploadPost = function(post) {
@@ -110,21 +115,13 @@ UploadPost = function(post) {
     OnDelete(newPostDiv, post);
   });
 
-  //username which will be displayed in post, set to: test for now
-  let userName = document.createElement("p");
-  userName.innerHTML = "test";
-  let userNameDiv = document.createElement("div");
-  userNameDiv.appendChild(userName);
-
   let dateParagraph = document.createElement("p");
   dateParagraph.innerHTML = post.date;
-  dateParagraph.className = "ml-4";
   let dateParagraphDiv = document.createElement("div");
   dateParagraphDiv.appendChild(dateParagraph);
 
   let topDiv = document.createElement("div");
   topDiv.className = "mt-4 top-div";
-  topDiv.appendChild(userNameDiv);
   topDiv.appendChild(dateParagraphDiv);
 
   newPostDiv.appendChild(topDiv);

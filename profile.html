@@ -16,13 +16,9 @@
         <div class="jumbotron">
             <h1 class="display-4">Profile</h1>
             <hr class="my-4">
-            <form id="profile-form">
-                <label for="name">name:</label><br>
-                <input type="text" id="name" name="name" required><br><br>
-                <label for="profile-textarea">About you: </label><br>
-                <textarea id="profile-textarea" name="textarea" rows="4" cols="50">Tell us about yourself</textarea><br><br>
-                <button type="submit">Save</button><br><br>
-            </form>
+            <div id="profile-div"></div>
+            <div class='mt-4' id="wall-bttn"><button>Go to Wall</button></div>
+            <div class="col-lg-3 mt-4"><input type="button" id="logoutBtn" value="Logout"></div>
         </div>
     </div>
 
@@ -36,6 +32,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+    <script src="./js/profile.js"></script>
 </body>
 
 </html>

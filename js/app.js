@@ -130,6 +130,7 @@ app.get("/walls/API/V1/user/logout", (req, res) => {
       console.log(err);
     } else {
       console.log("HEREEEEE");
+      UpdateStats("GET", "/walls/API/V1/user/logout");
       res.redirect("/");
     }
   });
@@ -200,6 +201,7 @@ app.get("/walls/API/V1/admin/stats", (req, res) => {
     }
     console.log(query_obj.results);
     string = JSON.stringify(query_obj);
+    UpdateStats("GET", "/walls/API/V1/admin/stats");
     res.send(string);
   });
 });
@@ -227,13 +229,13 @@ app.post("/walls/API/V1/post/signup", function(req, res) {
             failed: err,
           });
         } else {
+          UpdateStats("POST", "/walls/API/V1/post/signup");
           res.redirect("/");
         }
       }
     );
   }
 });
-
 app.post(rootPost + "/login", function(req, res) {
   let username = req.body.username;
   let password = req.body.password;
@@ -253,16 +255,19 @@ app.post(rootPost + "/login", function(req, res) {
             password: password,
             failed: err,
           });
-        } else if (result[0].isAdmin == 1) {
+        } 
+        else if (result[0].isAdmin == 1) {
           //if admin: go to admin page
           currentUser.id = result[0].id;
           req.session.loggedin = true;
           req.session.username = username;
+          UpdateStats("POST", "/walls/API/V1/post/login");
           res.redirect("/admin");
         } else {
           currentUser.id = result[0].id;
           req.session.loggedin = true;
           req.session.username = username;
+          UpdateStats("POST", "/walls/API/V1/post/login");
           res.redirect("/profile");
         }
       }
@@ -306,6 +311,7 @@ app.put("/walls/API/V1/user/profile", (req, res) => {
       console.log(
         `Successfully updated profile of user with id: ${currentUser.id}`
       );
+      UpdateStats("PUT", "/walls/API/V1/user/profile");
       res.sendStatus(200);
     }
   );
@@ -322,6 +328,7 @@ app.delete("/walls/API/V1/user/delete", (req, res) => {
           if (err) {
             console.log(err);
           } else {
+            UpdateStats("DELETE", "/walls/API/V1/user/delete");
             res.sendStatus(200);
           }
         });

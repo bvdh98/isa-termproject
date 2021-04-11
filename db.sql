@@ -16,3 +16,12 @@ CREATE TABLE `wall_posts` (
   KEY `fk_wall_posts_users_idx` (`users_id`),
   CONSTRAINT `fk_wall_posts_users` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*code to create stats table*/
+SELECT * FROM isa_term_project.stats;CREATE TABLE `stats` (
+  `stat_id` int NOT NULL AUTO_INCREMENT,
+  `resource` varchar(45) NOT NULL,
+  `count` int NOT NULL DEFAULT '0',
+  `method` varchar(45) NOT NULL,
+  PRIMARY KEY (`stat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

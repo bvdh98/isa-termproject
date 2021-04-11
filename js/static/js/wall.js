@@ -95,10 +95,9 @@ const domainURL = "http://localhost:8888";
 let endPoint = "/walls/API/V1";
 
 GoToProfile = async function(){
-  const endPoint = "http://localhost:8888/profile";
-  const response = await fetch(endPoint);
+  const response = await fetch(domainURL.concat("/profile"));
   if(response.status == 200) {
-      window.location.assign("http://localhost:8888/profile");
+      window.location.assign(domainURL.concat("/profile"));
   }
 }
 

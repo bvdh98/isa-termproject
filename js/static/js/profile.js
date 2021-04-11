@@ -39,14 +39,18 @@ $(function() {
   };
 });
 
+const domainURL = "http://localhost:8888";
+let endPoint = "/walls/API/V1";
+
+//domainURL.concat(endPoint, "/post/") + id
+
 GoToWall = async function(){
-    const endPoint = "http://localhost:8888/wall";
-    const response = await fetch(endPoint);
+    const response = await fetch(domainURL.concat("/wall"));
     if(response.status == 200) {
-        window.location.assign("http://localhost:8888/wall");
+        window.location.assign(domainURL.concat("/wall"));
     }
 }
-
+//http://localhost:8888/walls/API/V1/user/profile
 SaveProfile = async function(name,about) {
   let profile = {};
   console.log(document.getElementById("name").innerHTML);
@@ -61,7 +65,7 @@ SaveProfile = async function(name,about) {
     body: JSON.stringify(profile),
   };
   const response = await fetch(
-    "http://localhost:8888/walls/API/V1/user/profile",
+    domainURL.concat(endPoint,"/user/profile"),
     putMethod
   );
   if (response.status == 200) {
@@ -72,8 +76,7 @@ SaveProfile = async function(name,about) {
 };
 
 GetProfile = async function() {
-  const endPoint = "http://localhost:8888/walls/API/V1/user/profile";
-  const response = await fetch(endPoint);
+  const response = await fetch(domainURL.concat(endPoint,"/user/profile"));
   const userNodeList = await response.json();
   for (let i = 0; i < userNodeList.results.length; i++) {
     let user = JSON.parse(userNodeList.results[i]);

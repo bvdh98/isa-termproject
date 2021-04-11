@@ -34,9 +34,11 @@ $(function() {
   };
 });
 
+const domainURL = "http://localhost:8888";
+let endPoint = "/walls/API/V1";
+
 GetStats = async function() {
-  const endPoint = "http://localhost:8888/walls/API/V1/admin/stats";
-  const response = await fetch(endPoint);
+  const response = await fetch(domainURL.concat(endPoint,"/post/user/admin"));
   const statsNodeList = await response.json();
   let stats = [];
   for (let i = 0; i < statsNodeList.results.length; i++) {

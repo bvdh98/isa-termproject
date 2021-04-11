@@ -55,7 +55,7 @@ const db = mysql.createConnection({
 let pingCountId = 0;
 let pingCountPost = 0;
 
-app.get("/walls/API/V1/post/admin", (req, res) => {
+app.get("/walls/API/V1/post/user/admin", (req, res) => {
   res.send(
     "Pinged post /walls/API/V1/postid ${pingCountId} times.\nPinged get /walls/API/V1/post ${pingCountPost} times."
   );

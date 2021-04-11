@@ -73,6 +73,28 @@ logoutBtn.addEventListener("click", function() {
   LogOut();
 });
 
+DeleteAccount = async function() {
+  const getMethod = {
+    method: "DELETE",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  };
+
+  const response = await fetch(
+    domainURL.concat(endPoint, "/user/delete"),
+    getMethod
+  );
+  if (response.status == 200) {
+    alert("Successfully deleted your account");
+    window.location.assign(domainURL);
+  }
+};
+
+let deleteAccountBttn = document
+  .getElementById("delAccntBttn")
+  .addEventListener("click", function() {DeleteAccount()});
+
 SaveProfile = async function(name, about) {
   let profile = {};
   console.log(document.getElementById("name").innerHTML);

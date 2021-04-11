@@ -8,7 +8,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;*/
-SELECT * FROM isa_term_project.users;CREATE TABLE `users` (
+CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE `wall_posts` (
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*code to create stats table*/
-SELECT * FROM isa_term_project.stats;CREATE TABLE `stats` (
+CREATE TABLE `stats` (
   `stat_id` int NOT NULL AUTO_INCREMENT,
   `resource` varchar(45) NOT NULL,
   `count` int NOT NULL DEFAULT '0',

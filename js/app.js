@@ -55,12 +55,6 @@ const db = mysql.createConnection({
 let pingCountId = 0;
 let pingCountPost = 0;
 
-app.get("/walls/API/V1/post/user/admin", (req, res) => {
-  res.send(
-    "Pinged post /walls/API/V1/postid ${pingCountId} times.\nPinged get /walls/API/V1/post ${pingCountPost} times."
-  );
-});
-
 app.post("/walls/API/V1/post", (req, res) => {
   pingCountId++;
   let post = req.body;
@@ -130,6 +124,18 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
   });
 });
 
+app.get("/walls/API/V1/user/logout", (req, res) => {
+  req.session.destroy(function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("HEREEEEE");
+      res.redirect("/");
+    }
+  });
+  //res.redirect('/');
+});
+
 app.delete("/walls/API/V1/post/:id", (req, res) => {
   let post = req.body;
   let deleteStmt = `DELETE FROM wall_posts WHERE wall_post_id = ${req.params
@@ -168,12 +174,12 @@ app.get("/wall", function(req, res) {
 });
 
 app.get("/walls/API/V1/user/logout", (req, res) => {
-  req.session.destroy(function(err){
-    if(err) {
+  req.session.destroy(function(err) {
+    if (err) {
       console.log(err);
     } else {
-      console.log('HEREEEEE');
-      res.redirect('/');
+      console.log("HEREEEEE");
+      res.redirect("/");
     }
   });
   //res.redirect('/');
@@ -258,7 +264,7 @@ app.post(rootPost + "/login", function(req, res) {
           req.session.loggedin = true;
           req.session.username = username;
           res.redirect("/profile");
-        } 
+        }
       }
     );
   }
@@ -288,7 +294,7 @@ app.put("/walls/API/V1/user/profile", (req, res) => {
   let putStmt = `UPDATE users SET displayName = ?,about = ? WHERE id = ?`;
   db.query(
     putStmt,
-    [profile.displayName,profile.about,currentUser.id],
+    [profile.displayName, profile.about, currentUser.id],
     function(err, result, fields) {
       if (err) {
         console.log(
@@ -305,7 +311,26 @@ app.put("/walls/API/V1/user/profile", (req, res) => {
   );
 });
 
-app.get("/walls/API/V1/admin/stats", (req, res) => {
+app.delete("/walls/API/V1/user/delete", (req, res) => {
+  let sql_statement = "Delete FROM users where id=${currentUser.id}";
+  if (req.session.loggedin) {
+    db.query(sql_statement, function(err, result) {
+      if (err) {
+        console.log("failed to delete user");
+      } else {
+        req.session.destroy(function(err) {
+          if (err) {
+            console.log(err);
+          } else {
+            res.sendStatus(200);
+          }
+        });
+      }
+    });
+  }
+});
+
+/*app.get("/walls/API/V1/admin/stats", (req, res) => {
   let string = JSON.stringify(posts);
   res.send(string);
 });

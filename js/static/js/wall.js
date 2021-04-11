@@ -43,10 +43,8 @@ $(function() {
       },
       body: JSON.stringify(post),
     };
-    const response = await fetch(
-      domainURL.concat(endPoint, "/post"),
-      postMethod
-    );
+    const response = await fetch("http://localhost:8888/walls/API/V1/post",
+    postMethod);
     if (response.status == 200) {
       alert("Post saved successfully");
     } else {
@@ -162,14 +160,10 @@ LogOut = async function() {
       "Content-type": "application/json; charset=UTF-8",
     },
   };
-
-  const response = await fetch(
-    domainURL.concat(endPoint, "/user/logout"),
-    getMethod
-  );
-  if (response.status == 200) {
+  const response = await fetch("http://localhost:8888/walls/API/V1/user/logout", getMethod);
+  if(response.status == 200) {
     alert("Logout Successful");
-    window.location.assign(domainURL);
+    window.location.assign("http://localhost:8888");
   }
 };
 
@@ -188,9 +182,8 @@ DeleteWallPost = async function(post) {
     },
     body: JSON.stringify(post),
   };
-  let id = post.wall_post_id;
-  const response = await fetch(
-    domainURL.concat(endPoint, "/post/") + id,
+  let id = post.wall_post_id
+  const response = await fetch("http://localhost:8888/walls/API/V1/post/" + id,
     deleteMethod
   );
   if (response.status == 200) {
@@ -212,7 +205,7 @@ UpdateWallPost = async function(post) {
   let id = post.wall_post_id;
   console.log(domainURL + endPoint);
   const response = await fetch(
-    domainURL.concat(endPoint, "/post/") + id,
+    "http://localhost:8888/walls/API/V1/post/" + id,
     putMethod
   );
   if (response.status == 200) {
@@ -240,8 +233,8 @@ OnEdit = function(postContent, editBttn, deleteBttn, newPostDiv, post) {
 };
 
 GetPosts = async function(posts) {
-  getEndPoint = domainURL.concat(endPoint, "/post");
-  const response = await fetch(getEndPoint);
+  const endPoint = "http://localhost:8888/walls/API/V1/post";
+  const response = await fetch(endPoint);
   const postNodeList = await response.json();
   for (let i = 0; i < postNodeList.results.length; i++) {
     let wallPost = JSON.parse(postNodeList.results[i]);

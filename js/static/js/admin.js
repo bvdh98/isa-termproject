@@ -36,9 +36,9 @@ $(function() {
 
 const domainURL = "http://localhost:8888";
 let endPoint = "/walls/API/V1";
-
+///walls/API/V1/admin/stats
 GetStats = async function() {
-  const response = await fetch(domainURL.concat(endPoint,"/post/user/admin"));
+  const response = await fetch(domainURL.concat(endPoint,"/admin/stats"));
   const statsNodeList = await response.json();
   let stats = [];
   for (let i = 0; i < statsNodeList.results.length; i++) {

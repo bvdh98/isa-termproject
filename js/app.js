@@ -312,7 +312,7 @@ app.put("/walls/API/V1/user/profile", (req, res) => {
 });
 
 app.delete("/walls/API/V1/user/delete", (req, res) => {
-  let sql_statement = "Delete FROM users where id=${currentUser.id}";
+  let sql_statement = `Delete FROM users where id=${currentUser.id}`;
   if (req.session.loggedin) {
     db.query(sql_statement, function(err, result) {
       if (err) {

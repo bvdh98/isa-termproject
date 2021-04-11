@@ -1,4 +1,7 @@
 $(function() {
+  const domainURL = "http://localhost:8888";
+  let endPoint = "/walls/API/V1";
+
   let postDiv = $("#post-div");
   let makePostDiv = $("#make-post-div");
   let posts = [];
@@ -40,12 +43,13 @@ $(function() {
       },
       body: JSON.stringify(post),
     };
-    const response = await fetch("http://localhost:8888/walls/API/V1/post",
-    postMethod);
+    const response = await fetch(
+      domainURL.concat(endPoint, "/post"),
+      postMethod
+    );
     if (response.status == 200) {
       alert("Post saved successfully");
-    } 
-    else {
+    } else {
       alert("Failed to save post");
     }
   };
@@ -87,6 +91,9 @@ $(function() {
   };
 });
 
+const domainURL = "http://localhost:8888";
+let endPoint = "/walls/API/V1";
+
 GoToProfile = async function(){
   const endPoint = "http://localhost:8888/profile";
   const response = await fetch(endPoint);
@@ -114,7 +121,7 @@ UploadPost = function(post) {
   });
 
   deleteBttn.addEventListener("click", function() {
-    OnDelete(newPostDiv,post);
+    OnDelete(newPostDiv, post);
   });
 
   //username which will be displayed in post, set to: test for now
@@ -145,7 +152,7 @@ UploadPost = function(post) {
   postDiv.appendChild(newPostDiv);
 };
 
-OnDelete = function(newPostDiv,post) {
+OnDelete = function(newPostDiv, post) {
   newPostDiv.remove();
   DeleteWallPost(post);
 };
@@ -163,6 +170,30 @@ OnUpdate = function(updateBttn, editBttn, deleteBttn, postContent, post) {
   UpdateWallPost(post);
 };
 
+LogOut = async function() {
+  const getMethod = {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  };
+
+  const response = await fetch(
+    domainURL.concat(endPoint, "/user/logout"),
+    getMethod
+  );
+  if (response.status == 200) {
+    alert("Logout Successful");
+    window.location.assign(domainURL);
+  }
+};
+
+let logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", function() {
+  LogOut();
+});
+
 //ajax call to delete wall post from server
 DeleteWallPost = async function(post) {
   const deleteMethod = {
@@ -172,8 +203,9 @@ DeleteWallPost = async function(post) {
     },
     body: JSON.stringify(post),
   };
-  let id = post.wall_post_id
-  const response = await fetch("http://localhost:8888/walls/API/V1/post/" + id,
+  let id = post.wall_post_id;
+  const response = await fetch(
+    domainURL.concat(endPoint, "/post/") + id,
     deleteMethod
   );
   if (response.status == 200) {
@@ -193,8 +225,9 @@ UpdateWallPost = async function(post) {
     body: JSON.stringify(post),
   };
   let id = post.wall_post_id;
+  console.log(domainURL + endPoint);
   const response = await fetch(
-    "http://localhost:8888/walls/API/V1/post/" + id,
+    domainURL.concat(endPoint, "/post/") + id,
     putMethod
   );
   if (response.status == 200) {
@@ -222,8 +255,8 @@ OnEdit = function(postContent, editBttn, deleteBttn, newPostDiv, post) {
 };
 
 GetPosts = async function(posts) {
-  const endPoint = "http://localhost:8888/walls/API/V1/post";
-  const response = await fetch(endPoint);
+  getEndPoint = domainURL.concat(endPoint, "/post");
+  const response = await fetch(getEndPoint);
   const postNodeList = await response.json();
   for (let i = 0; i < postNodeList.results.length; i++) {
     let wallPost = JSON.parse(postNodeList.results[i]);

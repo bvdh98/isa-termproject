@@ -62,8 +62,6 @@ app.get("/walls/API/V1/post/admin", (req, res) => {
 });
 
 app.post("/walls/API/V1/post", (req, res) => {
-  posts.wall_post_req++;
-  //console.log(posts.wall_post_req);
   pingCountId++;
   let post = req.body;
   //console.log(post);
@@ -76,9 +74,26 @@ app.post("/walls/API/V1/post", (req, res) => {
       res.sendStatus(400);
     }
     console.log(`Wall post ${post.text} was stored succesfully`);
+    UpdateStats("POST", "/walls/API/V1/post");
     res.sendStatus(200);
   });
 });
+
+function UpdateStats(method, resource) {
+  let stmt = `UPDATE stats SET count = count + 1 WHERE resource = '${resource}' AND method = '${method}'`;
+  db.query(stmt, function(err, result) {
+    if (err) {
+      console.log(
+        `Wall ${method} request for ${resource} could not have its count updated` +
+          err.stack
+      );
+      res.sendStatus(400);
+    }
+    console.log(
+      `Wall ${method} request for ${resource} could have its count updated`
+    );
+  });
+}
 
 app.get("/walls/API/V1/post", (req, res) => {
   let postQuery = `SELECT * FROM wall_posts WHERE users_id = ${currentUser.id}`;
@@ -95,6 +110,7 @@ app.get("/walls/API/V1/post", (req, res) => {
     }
     console.log(query_obj.results);
     string = JSON.stringify(query_obj);
+    UpdateStats("GET", "/walls/API/V1/post");
     res.send(string);
   });
 });
@@ -109,6 +125,7 @@ app.put("/walls/API/V1/post/:id", (req, res) => {
       res.sendStatus(400);
     }
     console.log(`Updated wall post: ${post.text}`);
+    UpdateStats("PUT", "/walls/API/V1/post/:id");
     res.sendStatus(200);
   });
 });
@@ -123,6 +140,7 @@ app.delete("/walls/API/V1/post/:id", (req, res) => {
       res.sendStatus(400);
     }
     console.log(`Deleted wall post: ${post.text}`);
+    UpdateStats("DELETE", "/walls/API/V1/post/:id");
     res.sendStatus(200);
   });
 });
@@ -147,6 +165,25 @@ app.get("/wall", function(req, res) {
     res.send("Please login to view this page");
   }
   //res.end();
+});
+
+app.get("/walls/API/V1/admin/stats", (req, res) => {
+  let statsStmt = `SELECT * FROM stats`;
+  let string = "";
+  db.query(statsStmt, function(err, result, fields) {
+    if (err) {
+      console.log(`could not get stats: ` + err.stack);
+      res.sendStatus(400);
+    }
+    console.log(`Got all stats`);
+    let query_obj = { results: [] };
+    for (let i = 0; i < result.length; i++) {
+      query_obj["results"].push(JSON.stringify(result[i]));
+    }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
+  });
 });
 
 app.get("/admin", function(req, res) {
@@ -198,14 +235,18 @@ app.post(rootPost + "/login", function(req, res) {
             password: password,
             failed: err,
           });
-        } else if (result.length > 0) {
+        } else if (result[0].isAdmin == 1) {
+          //if admin: go to admin page
+          currentUser.id = result[0].id;
+          req.session.loggedin = true;
+          req.session.username = username;
+          res.redirect("/admin");
+        } else {
           currentUser.id = result[0].id;
           req.session.loggedin = true;
           req.session.username = username;
           res.redirect("/profile");
-        } else {
-          res.redirect(404, "/");
-        }
+        } 
       }
     );
   }
@@ -271,24 +312,10 @@ app.get("/walls/API/V1/post", (req, res) => {
     let query_obj = { results: [] };
     for (let i = 0; i < result.length; i++) {
       query_obj["results"].push(JSON.stringify(result[i]));
-  db.query('SELECT id FROM users WHERE username = ?', [req.session.username],
-  function(err, result) {
-    if(err) throw err;
-    let id = JSON.parse(JSON.stringify(result[0]['id']));
-    if(result.length > 0) {
-      db.query('SELECT * FROM wall_posts WHERE users_id = ?', [id],
-      function(err, result) {
-        if(err) {
-          res.sendStatus(400);
-        }
-        let query_obj = { results: [] };
-        for(let i = 0; i < result.length; i++) {
-          query_obj["results"].push(JSON.stringify(result[i]));
-        }
-        let convert_to_string = JSON.stringify(query_obj);
-        res.send(convert_to_string);
-      });
     }
+    console.log(query_obj.results);
+    string = JSON.stringify(query_obj);
+    res.send(string);
   });
 });*/
 

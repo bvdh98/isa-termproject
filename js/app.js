@@ -47,8 +47,8 @@ posts.wall_get_req = 0;
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "rootroot",
-  database: "nodelogin",
+  password: "root",
+  database: "isa_term_project",
   multipleStatements: true,
 });
 
